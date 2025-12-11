@@ -1,0 +1,21 @@
+{
+  "name": "Pixel Weather",
+  "short_name": "Weather",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#AEC6FF",
+  "theme_color": "#AEC6FF",
+  "description": "Replica de Pixel Weather App",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/4052/4052984.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/4052/4052984.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
