@@ -26,7 +26,6 @@
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            /* Evita el rebote de scroll en ChromeOS */
             overscroll-behavior-y: none; 
         }
 
@@ -51,6 +50,7 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            cursor: pointer; /* Para indicar que se puede recargar */
         }
         .temp-display { 
             font-size: 7rem; 
@@ -101,7 +101,6 @@
 
         /* HOURLY SCROLL */
         .hourly-container {
-            /* Glass effect sutil */
             background: rgba(255, 255, 255, 0.3);
             border-radius: 28px;
             padding: 20px;
@@ -130,7 +129,7 @@
 
         .tile {
             position: relative;
-            height: 180px; /* Más altos para lucir las formas */
+            height: 180px;
             border-radius: 28px;
             padding: 20px;
             display: flex;
@@ -164,60 +163,51 @@
             color: #1A1C1E;
         }
         .tile-unit { font-size: 1rem; margin-left: 2px; font-weight: 600; opacity: 0.6; }
+        .tile-sub { font-size: 0.85rem; opacity: 0.8; z-index: 2; font-weight: 500; }
 
-        .tile-sub {
-            font-size: 0.85rem;
-            opacity: 0.8;
-            z-index: 2;
-            font-weight: 500;
-        }
-
-        /* FORMAS DE FONDO (Shapes) */
+        /* FORMAS DE FONDO */
         .shape-bg {
             position: absolute;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 120px;
-            height: 120px;
-            z-index: 1;
-            opacity: 1;
+            width: 120px; height: 120px;
+            z-index: 1; opacity: 1;
         }
 
-        /* VIENTO: Triángulo redondeado (Ogival) */
-        .tile.wind { background-color: #F0F4F2; } /* Gris verdoso muy claro */
+        /* VIENTO: Triángulo redondeado */
+        .tile.wind { background-color: #F0F4F2; }
         .wind .shape-bg {
-            background-color: #DBE4DE; /* Verde Pixel */
+            background-color: #DBE4DE;
             border-radius: 50% 50% 5px 50%;
             transform: translate(-50%, -40%) rotate(-45deg);
             width: 130px; height: 130px;
         }
 
-        /* UV: Flor/Estrella (Scalloped) */
-        .tile.uv { background-color: #FFFDF0; } /* Crema */
+        /* UV: Flor/Estrella */
+        .tile.uv { background-color: #FFFDF0; }
         .uv .shape-bg {
-            background-color: #F8E7A8; /* Amarillo sol */
+            background-color: #F8E7A8;
             border-radius: 30px;
             transform: translate(-50%, -50%) rotate(15deg);
         }
 
-        /* VISIBILIDAD: Círculo perfecto */
+        /* VISIBILIDAD: Círculo */
         .tile.vis { background-color: #F0F5F3; }
         .vis .shape-bg {
-            background-color: #CBE5D8; /* Menta */
+            background-color: #CBE5D8;
             border-radius: 50%;
             width: 110px; height: 110px;
         }
 
-        /* HUMEDAD: Gota ancha */
+        /* HUMEDAD: Gota */
         .tile.hum { background-color: #EEF7FF; }
         .hum .shape-bg {
-            background-color: #C3E7FF; /* Azul cielo */
+            background-color: #C3E7FF;
             border-radius: 40% 40% 50% 50% / 30% 30% 70% 70%;
             width: 130px; height: 110px;
         }
 
-        /* Animación de entrada */
+        /* Animación */
         @keyframes popIn { 
             from { opacity: 0; transform: scale(0.9); } 
             to { opacity: 1; transform: scale(1); } 
@@ -234,9 +224,9 @@
 
     <div class="app-container">
         <header>
-            <div class="location">
+            <div class="location" onclick="window.location.reload()">
                 <span class="material-symbols-rounded" style="font-size: 20px; color: #444;">location_on</span>
-                <span id="city-name">Ubicación...</span>
+                <span id="city-name">Detectando...</span>
             </div>
             
             <div class="temp-display">
@@ -256,7 +246,165 @@
                 AI Weather Report
             </div>
             <div class="ai-text" id="ai-summary">
-                Analizando patrones atmosféricos para tu zona...
+                Cargando datos del clima...
             </div>
             <div class="ai-footer">
                 <span>Generado con IA local</span>
+                <span class="material-symbols-rounded" style="font-size: 16px;">thumb_up</span>
+            </div>
+        </div>
+
+        <div class="hourly-container" id="hourly-list"></div>
+
+        <div class="grid-stats">
+            <div class="tile wind">
+                <div class="shape-bg"></div>
+                <div class="tile-title"><span class="material-symbols-rounded">air</span> Viento</div>
+                <div class="tile-value-container"><span class="tile-value" id="wind-speed">--</span><span class="tile-unit">km/h</span></div>
+                <div class="tile-sub" id="wind-dir">Normal</div>
+            </div>
+            <div class="tile uv">
+                <div class="shape-bg"></div>
+                <div class="tile-title"><span class="material-symbols-rounded">wb_sunny</span> Índice UV</div>
+                <div class="tile-value-container"><span class="tile-value" id="uv-index">--</span></div>
+                <div class="tile-sub">Moderado</div>
+            </div>
+            <div class="tile hum">
+                <div class="shape-bg"></div>
+                <div class="tile-title"><span class="material-symbols-rounded">humidity_percentage</span> Humedad</div>
+                <div class="tile-value-container"><span class="tile-value" id="humidity">--</span><span class="tile-unit">%</span></div>
+                <div class="tile-sub">Rocío 14°</div>
+            </div>
+            <div class="tile vis">
+                <div class="shape-bg"></div>
+                <div class="tile-title"><span class="material-symbols-rounded">visibility</span> Visibilidad</div>
+                <div class="tile-value-container"><span class="tile-value" id="visibility">--</span><span class="tile-unit">km</span></div>
+                <div class="tile-sub">Clara</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "https://api.open-meteo.com/v1/forecast";
+        const API_PARAMS = "current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m&hourly=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,uv_index_max&timezone=auto";
+
+        function getWeatherIcon(code) {
+            if (code === 0) return 'sunny';
+            if (code <= 3) return 'partly_cloudy_day';
+            if (code <= 48) return 'foggy';
+            if (code <= 67) return 'rainy';
+            if (code <= 77) return 'ac_unit';
+            if (code <= 82) return 'rainy';
+            if (code <= 99) return 'thunderstorm';
+            return 'cloud';
+        }
+
+        async function getCityName(lat, lon) {
+            try {
+                const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+                const response = await fetch(url, { headers: { 'User-Agent': 'PixelWeatherPWA/1.0' } });
+                const data = await response.json();
+                const addr = data.address;
+                const city = addr.city || addr.town || addr.village || addr.suburb || "Tu Ubicación";
+                document.getElementById('city-name').innerText = city;
+                return city;
+            } catch (e) {
+                console.log("Error ciudad", e);
+                document.getElementById('city-name').innerText = "Ubicación";
+                return "Tu zona";
+            }
+        }
+
+        function generateAIReport(temp, code, city) {
+            const conditions = { 0: "cielo despejado", 1: "pocas nubes", 3: "nublado", 61: "lluvia", 95: "tormenta" };
+            const condText = conditions[code] || "clima variable";
+            let vibe = temp > 28 ? "caluroso" : (temp < 15 ? "fresco" : "agradable");
+            return `Resumen para <b>${city}</b>:<br>• Clima <b>${vibe}</b> (${temp}°).<br>• ${condText} el resto del día.<br>• Revisa la humedad si sales.`;
+        }
+
+        async function fetchWeather(lat, lon) {
+            try {
+                // 1. Nombre Ciudad (No bloqueante)
+                const cityPromise = getCityName(lat, lon);
+                
+                // 2. Clima
+                const url = `${API_BASE}?latitude=${lat}&longitude=${lon}&${API_PARAMS}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                // Actualizar UI
+                const current = data.current;
+                const daily = data.daily;
+
+                document.getElementById('current-temp').innerText = Math.round(current.temperature_2m);
+                document.getElementById('feels-like').innerText = Math.round(current.apparent_temperature);
+                document.getElementById('main-icon').innerText = getWeatherIcon(current.weather_code);
+                document.getElementById('max-temp').innerText = Math.round(daily.temperature_2m_max[0]);
+                document.getElementById('min-temp').innerText = Math.round(daily.temperature_2m_min[0]);
+
+                document.getElementById('wind-speed').innerText = Math.round(current.wind_speed_10m);
+                document.getElementById('humidity').innerText = current.relative_humidity_2m;
+                document.getElementById('uv-index').innerText = Math.round(daily.uv_index_max[0]);
+                document.getElementById('visibility').innerText = "10+";
+
+                // Hourly
+                const list = document.getElementById('hourly-list');
+                list.innerHTML = '';
+                const hour = new Date().getHours();
+                for(let i = hour; i < hour + 24; i++) {
+                    if(!data.hourly.time[i]) break;
+                    const t = Math.round(data.hourly.temperature_2m[i]);
+                    const c = data.hourly.weather_code[i];
+                    list.innerHTML += `<div class="hour-item"><span class="hour-time">${data.hourly.time[i].slice(11,16)}</span><span class="material-symbols-rounded" style="font-size:24px;color:#444">${getWeatherIcon(c)}</span><span class="hour-temp">${t}°</span></div>`;
+                }
+
+                // AI Report (Esperamos nombre ciudad)
+                const cityName = await cityPromise;
+                document.getElementById('ai-summary').innerHTML = generateAIReport(current.temperature_2m, current.weather_code, cityName);
+
+            } catch (error) {
+                console.error("Error total:", error);
+                document.getElementById('ai-summary').innerText = "Error cargando datos. Toca la ubicación para reintentar.";
+            }
+        }
+
+        function init() {
+            // Timeout de 5 segundos para geolocalización
+            const timeoutVal = 5000;
+            const fallbackLocation = { coords: { latitude: -34.6037, longitude: -58.3816 } }; // Default: Buenos Aires
+            
+            let hasLoaded = false;
+
+            const success = (pos) => {
+                if(hasLoaded) return;
+                hasLoaded = true;
+                fetchWeather(pos.coords.latitude, pos.coords.longitude);
+            };
+
+            const error = () => {
+                if(hasLoaded) return;
+                hasLoaded = true;
+                console.warn("Fallo GPS, usando default");
+                fetchWeather(fallbackLocation.coords.latitude, fallbackLocation.coords.longitude);
+            };
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(success, error, { timeout: timeoutVal });
+                // Si tarda mucho, forzamos error
+                setTimeout(error, timeoutVal);
+            } else {
+                error();
+            }
+        }
+
+        init();
+
+        // Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').then(reg => {
+                reg.update(); // Intentar actualizar cache
+            });
+        }
+    </script>
+</body>
+</html>
