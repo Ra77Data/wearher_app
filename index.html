@@ -3,156 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#AEC6FF">
-    <title>Pixel Weather PWA</title>
+    <meta name="theme-color" content="#111927">
+    <title>Pixel Weather</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
 
     <style>
         :root {
-            --bg-grad-start: #92bbf7; /* Azul cielo más vibrante */
-            --bg-grad-end: #dcebff;   /* Blanco azulado */
-            --glass-bg: rgba(255, 255, 255, 0.45); /* Base del cristal */
-            --glass-border: rgba(255, 255, 255, 0.6);
-            --text-primary: #001e30;
-            --text-secondary: #3f4852;
-            --accent-color: #2b2b2b;
+            /* Paleta Oficial Pixel Weather (Dark Mode) */
+            --bg-dark: #111927;      /* Fondo principal casi negro/azul */
+            --card-surface: #1E2B3C; /* Azul grisáceo para tarjetas */
+            --card-highlight: #2C3C50; /* Un poco más claro */
+            
+            --text-primary: #FFFFFF;
+            --text-secondary: #B0BCCE;
+            
+            /* Accents (Colores pastel de Google) */
+            --accent-yellow: #E4E2C7; /* Para sol/UV */
+            --accent-blue: #C3E7FF;   /* Para lluvia/humedad */
+            --accent-dark-blue: #004A77; 
+            --accent-red: #F2B8B5;
         }
 
         body {
             font-family: 'Outfit', sans-serif;
-            background: linear-gradient(180deg, var(--bg-grad-start) 0%, var(--bg-grad-end) 100%);
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
             margin: 0;
             padding: 0;
-            color: var(--text-primary);
             min-height: 100vh;
             display: flex;
             justify-content: center;
+            /* Eliminamos el scroll rebote en móviles */
             overscroll-behavior-y: none;
-            /* Patrón sutil de ruido (opcional, le da textura) */
-            background-image: linear-gradient(180deg, var(--bg-grad-start) 0%, var(--bg-grad-end) 100%);
         }
 
         .app-container {
             width: 100%;
-            max-width: 500px; /* Un poco más estrecho para parecer móvil/widget */
-            padding: 24px;
+            max-width: 480px; /* Ancho típico de móvil */
+            padding: 20px;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            padding-bottom: 50px;
+            gap: 24px;
+            padding-bottom: 60px;
         }
 
-        /* --- CLASES DE UTILIDAD "GLASS" --- */
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--glass-border);
-            border-radius: 32px; /* Curvas extremas (Super Ellipse) */
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-        }
-
-        /* HEADER & TEMP */
+        /* --- HEADER (Captura 2700) --- */
         header { 
             text-align: center; 
-            padding-top: 10px; 
+            margin-top: 20px;
             margin-bottom: 10px;
         }
         
-        .location { 
-            font-size: 1.1rem; 
-            font-weight: 500; 
-            margin-bottom: 4px;
+        .location-badge {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 8px 16px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 50px;
-            cursor: pointer;
+            gap: 8px;
+            font-size: 1.1rem; 
+            font-weight: 500; 
+            color: var(--text-primary);
+            margin-bottom: 10px;
         }
 
-        .main-weather-container {
+        .current-weather {
             display: flex;
             flex-direction: column;
             align-items: center;
-            position: relative;
         }
 
         .temp-display { 
-            font-size: 8.5rem; /* GIGANTE */
-            font-weight: 400;  /* Letra fina */
-            letter-spacing: -6px; 
+            font-size: 7rem; /* Grande, como en la captura */
+            font-weight: 400; 
             line-height: 1;
-            margin: 10px 0;
-            color: var(--accent-color);
-            position: relative;
-            z-index: 2;
+            letter-spacing: -3px;
+            margin: 0;
         }
-        
+
         .condition-text {
-            font-size: 1.5rem;
-            font-weight: 400;
+            font-size: 1.3rem;
             color: var(--text-secondary);
-            margin-bottom: 8px;
+            margin-top: 8px;
             text-transform: capitalize;
         }
-
-        .high-low { 
-            font-size: 1.1rem; 
-            font-weight: 500; 
-            opacity: 0.8; 
+        
+        .high-low {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            opacity: 0.8;
         }
 
-        /* AI CARD (Bubbly Style) */
+        /* --- AI REPORT CARD (Captura 2700) --- */
         .ai-card {
-            padding: 24px;
+            background-color: var(--card-surface);
+            border-radius: 24px;
+            padding: 20px;
             position: relative;
-            overflow: hidden;
-            background: rgba(255, 250, 240, 0.6); /* Un toque cálido muy sutil */
-        }
-        
-        .ai-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: #555;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .ai-text {
-            font-size: 1.05rem;
-            line-height: 1.5;
-            color: #1f1f1f;
-            font-weight: 450;
         }
 
-        .ai-footer {
-            margin-top: 16px;
-            font-size: 0.75rem;
-            color: #666;
+        .ai-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        /* HOURLY SCROLL */
-        .hourly-container {
-            padding: 24px 20px;
+        .ai-content {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #E2E2E2;
+        }
+
+        /* --- HOURLY FORECAST (Captura 2700 parte inferior) --- */
+        .hourly-section {
+            background-color: var(--card-surface);
+            border-radius: 24px;
+            padding: 20px;
+        }
+        
+        .hourly-scroll {
             display: flex;
             overflow-x: auto;
-            gap: 28px;
-            scrollbar-width: none;
+            gap: 24px;
+            scrollbar-width: none; /* Firefox */
         }
-        .hourly-container::-webkit-scrollbar { display: none; }
-        
+        .hourly-scroll::-webkit-scrollbar { display: none; /* Chrome/Safari */ }
+
         .hour-item {
             display: flex;
             flex-direction: column;
@@ -160,81 +143,107 @@
             min-width: 40px;
             gap: 12px;
         }
-        .hour-time { font-size: 0.9rem; font-weight: 500; color: var(--text-secondary); }
-        .hour-temp { font-weight: 600; font-size: 1.2rem; }
+        .hour-time { font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; }
+        .hour-temp { font-size: 1.1rem; font-weight: 600; }
 
-        /* GRID TILES - ESTILO BENTO */
-        .grid-stats {
+        /* --- WIDGETS GRID (Captura 2702 - Formas Variadas) --- */
+        .bento-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
+            grid-auto-rows: 170px; /* Altura fija para las celdas */
             gap: 16px;
         }
 
-        .tile {
-            position: relative;
-            aspect-ratio: 1 / 1; /* Cuadrados perfectos */
+        /* Estilo base de widget */
+        .widget {
+            background-color: var(--card-surface);
+            border-radius: 28px; /* Redondeo estándar */
             padding: 20px;
+            position: relative;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            overflow: hidden;
-            transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: transform 0.2s;
         }
-        .tile:active { transform: scale(0.96); }
+        .widget:active { transform: scale(0.98); }
 
-        .tile-header {
+        .widget-title {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
             font-weight: 500;
             z-index: 2;
-            color: var(--text-secondary);
         }
 
-        .tile-value-container {
+        .widget-value {
+            font-size: 2rem;
+            font-weight: 500;
             z-index: 2;
-            margin-top: auto; /* Empuja el valor hacia abajo */
+            margin-top: auto;
         }
+        .widget-unit { font-size: 1rem; color: var(--text-secondary); margin-left: 2px; }
 
-        .tile-value {
-            font-size: 2.5rem;
-            font-weight: 400;
-            color: var(--accent-color);
-            line-height: 1;
+        /* --- FORMAS ESPECÍFICAS (Basado en Captura 2702) --- */
+
+        /* 1. Visibilidad (Circular) */
+        .widget.circle-shape {
+            border-radius: 50%; /* Círculo perfecto */
+            aspect-ratio: 1 / 1;
+            background-color: #2F3C50; /* Un poco más claro para resaltar */
+            align-items: center;
+            text-align: center;
+            justify-content: center;
+            gap: 10px;
         }
-        .tile-unit { font-size: 1.2rem; font-weight: 500; opacity: 0.6; margin-left: 2px; }
-        .tile-sub { font-size: 0.9rem; font-weight: 500; opacity: 0.7; margin-top: 4px; }
+        .widget.circle-shape .widget-value { margin-top: 0; }
 
-        /* FORMAS DE FONDO "ACUARELA" */
-        /* Ahora son más sutiles y borrosas para mezclarse con el vidrio */
-        .shape-bg {
+        /* 2. Humedad (Onda/Wave) */
+        .widget.wave-shape {
+            background: linear-gradient(180deg, var(--card-surface) 40%, var(--accent-dark-blue) 120%);
+        }
+        /* Un pseudo-elemento para simular el "agua" de la humedad */
+        .widget.wave-shape::after {
+            content: '';
             position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100px; height: 100px;
-            z-index: 1;
-            filter: blur(25px); /* Desenfoque fuerte para efecto acuarela */
-            opacity: 0.8;
-            transition: all 1s ease;
+            bottom: -20px; left: -10%; width: 120%; height: 60px;
+            background: var(--accent-blue);
+            opacity: 0.2;
+            border-radius: 50%;
+            filter: blur(20px);
         }
 
-        /* Colores pastel para las manchas */
-        .wind .shape-bg { background-color: #d1e4de; width: 140px; height: 140px; border-radius: 50%; }
-        .uv .shape-bg { background-color: #fceeb5; width: 120px; height: 120px; border-radius: 40%; }
-        .hum .shape-bg { background-color: #dbeafe; width: 130px; height: 150px; border-radius: 45%; }
-        .vis .shape-bg { background-color: #e0e7df; width: 120px; height: 120px; border-radius: 50%; }
-
-        /* Animación de entrada */
-        @keyframes floatUp { 
-            from { opacity: 0; transform: translateY(20px); } 
-            to { opacity: 1; transform: translateY(0); } 
+        /* 3. UV (Arco/Gauge) */
+        .widget.uv-shape {
+            background-color: var(--card-surface);
         }
-        .app-container > * { animation: floatUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
-        .app-container > *:nth-child(1) { animation-delay: 0.0s; }
-        .app-container > *:nth-child(2) { animation-delay: 0.1s; }
-        .app-container > *:nth-child(3) { animation-delay: 0.2s; }
-        .app-container > *:nth-child(4) { animation-delay: 0.3s; }
+        .uv-arc {
+            position: absolute;
+            bottom: 20px; right: 20px;
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            border: 6px solid var(--card-highlight);
+            border-top-color: var(--accent-yellow); /* Color activo */
+            transform: rotate(-45deg);
+        }
+
+        /* 4. Viento (Rectángulo Redondeado clásico) */
+        .widget.wind-shape {
+            background-color: var(--card-surface);
+        }
+        .wind-compass {
+            position: absolute;
+            right: 15px; top: 50%;
+            transform: translateY(-50%);
+            font-size: 40px;
+            color: var(--card-highlight);
+            opacity: 0.5;
+        }
+
+        /* Utilidad para iconos */
+        .material-symbols-rounded { font-size: 22px; }
 
     </style>
 </head>
@@ -242,68 +251,61 @@
 
     <div class="app-container">
         <header>
-            <div class="location" onclick="window.location.reload()">
-                <span class="material-symbols-rounded" style="font-size: 18px;">location_on</span>
-                <span id="city-name">Detectando...</span>
+            <div class="location-badge" onclick="window.location.reload()">
+                <span class="material-symbols-rounded">location_on</span>
+                <span id="city-name">Ubicación</span>
             </div>
             
-            <div class="main-weather-container">
-                <div class="temp-display">
-                    <span id="current-temp">--</span>°
-                </div>
-                <div class="condition-text" id="condition-text">--</div>
+            <div class="current-weather">
+                <div class="temp-display"><span id="current-temp">--</span>°</div>
+                <div class="condition-text" id="condition-text">Cargando...</div>
                 <div class="high-low">Máx <span id="max-temp">--</span>° · Mín <span id="min-temp">--</span>°</div>
             </div>
         </header>
 
-        <div class="glass-panel ai-card">
+        <div class="ai-card">
             <div class="ai-header">
-                <span class="material-symbols-rounded" style="font-size:20px; color:#F9AB00;">sparkle</span> Resumen IA
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <span class="material-symbols-rounded" style="font-size:18px; color: #FFF;">sparkle</span>
+                    AI Weather Report
+                </div>
             </div>
-            <div class="ai-text" id="ai-summary">
-                Obteniendo pronóstico inteligente...
-            </div>
-            <div class="ai-footer">
-                <span>Gemini Nano (Local)</span>
+            <div class="ai-content" id="ai-summary">
+                Generando pronóstico local...
             </div>
         </div>
 
-        <div class="glass-panel hourly-container" id="hourly-list">
+        <div class="hourly-section">
+            <div class="hourly-scroll" id="hourly-list">
+                </div>
+        </div>
+
+        <div class="bento-grid">
+            
+            <div class="widget wave-shape">
+                <div class="widget-title"><span class="material-symbols-rounded">humidity_percentage</span> Humedad</div>
+                <div class="widget-value"><span id="humidity">--</span><span class="widget-unit">%</span></div>
+                <div style="font-size:0.8rem; color:var(--text-secondary); z-index:2;">Punto rocío 14°</div>
             </div>
 
-        <div class="grid-stats">
-            <div class="glass-panel tile wind">
-                <div class="shape-bg"></div>
-                <div class="tile-header"><span class="material-symbols-rounded">air</span> Viento</div>
-                <div class="tile-value-container">
-                    <div class="tile-value"><span id="wind-speed">--</span></div>
-                    <div class="tile-sub"><span id="wind-dir">km/h</span></div>
-                </div>
+            <div class="widget circle-shape">
+                <div class="widget-title" style="font-size:0.85rem;"><span class="material-symbols-rounded">visibility</span> Visibilidad</div>
+                <div class="widget-value"><span id="visibility">--</span></div>
+                <div class="widget-unit">km</div>
             </div>
-            <div class="glass-panel tile uv">
-                <div class="shape-bg"></div>
-                <div class="tile-header"><span class="material-symbols-rounded">wb_sunny</span> UV</div>
-                <div class="tile-value-container">
-                    <div class="tile-value" id="uv-index">--</div>
-                    <div class="tile-sub">Moderado</div>
-                </div>
+
+            <div class="widget uv-shape">
+                <div class="widget-title"><span class="material-symbols-rounded">wb_sunny</span> Índice UV</div>
+                <div class="widget-value" id="uv-index">--</div>
+                <div class="uv-arc"></div> <div style="font-size:0.8rem; color:var(--text-secondary);">Moderado</div>
             </div>
-            <div class="glass-panel tile hum">
-                <div class="shape-bg"></div>
-                <div class="tile-header"><span class="material-symbols-rounded">humidity_percentage</span> Humedad</div>
-                <div class="tile-value-container">
-                    <div class="tile-value"><span id="humidity">--</span><span style="font-size:1.5rem">%</span></div>
-                    <div class="tile-sub">Rocío 14°</div>
-                </div>
+
+            <div class="widget wind-shape">
+                <div class="widget-title"><span class="material-symbols-rounded">air</span> Viento</div>
+                <div class="widget-value"><span id="wind-speed">--</span><span class="widget-unit">km/h</span></div>
+                <span class="material-symbols-rounded wind-compass">explore</span>
             </div>
-            <div class="glass-panel tile vis">
-                <div class="shape-bg"></div>
-                <div class="tile-header"><span class="material-symbols-rounded">visibility</span> Visibilidad</div>
-                <div class="tile-value-container">
-                    <div class="tile-value" id="visibility">--</div>
-                    <div class="tile-sub">km</div>
-                </div>
-            </div>
+
         </div>
     </div>
 
@@ -312,13 +314,11 @@
         const API_PARAMS = "current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m&hourly=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,uv_index_max&timezone=auto";
 
         function getWeatherIcon(code) {
-            // Códigos WMO
+            // Mapping simple WMO codes
             if (code === 0) return 'sunny';
             if (code <= 3) return 'partly_cloudy_day';
             if (code <= 48) return 'foggy';
             if (code <= 67) return 'rainy';
-            if (code <= 77) return 'ac_unit';
-            if (code <= 82) return 'rainy';
             if (code <= 99) return 'thunderstorm';
             return 'cloud';
         }
@@ -328,6 +328,7 @@
             if (code <= 3) return 'Parcialmente nublado';
             if (code <= 48) return 'Neblina';
             if (code <= 67) return 'Llovizna';
+            if (code <= 82) return 'Lluvia';
             if (code <= 99) return 'Tormenta';
             return 'Nublado';
         }
@@ -335,107 +336,92 @@
         async function getCityName(lat, lon) {
             try {
                 const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
-                const response = await fetch(url, { headers: { 'User-Agent': 'PixelWeatherPWA/1.0' } });
+                const response = await fetch(url, { headers: { 'User-Agent': 'PixelWeatherClone/1.0' } });
                 const data = await response.json();
                 const addr = data.address;
-                const city = addr.city || addr.town || addr.village || addr.suburb || "Tu Ubicación";
-                document.getElementById('city-name').innerText = city;
-                return city;
+                return addr.city || addr.town || addr.village || "Tu Ubicación";
             } catch (e) {
-                console.log("Error ciudad", e);
-                document.getElementById('city-name').innerText = "Ubicación";
-                return "Tu zona";
+                return "Ubicación";
             }
         }
 
         function generateAIReport(temp, code, city) {
-            const conditions = { 0: "cielo despejado", 1: "pocas nubes", 3: "nublado", 61: "lluvia", 95: "tormenta" };
-            const condText = conditions[code] || "clima variable";
-            let vibe = temp > 28 ? "caluroso" : (temp < 15 ? "fresco" : "agradable");
+            const text = getWeatherText(code).toLowerCase();
+            let tip = temp > 25 ? "Usa protector solar." : "Lleva un abrigo ligero.";
+            if(code >= 51) tip = "No olvides el paraguas.";
             
-            // Texto más natural, estilo asistente
-            return `Parece que hoy estará <b>${vibe}</b> en ${city}. Se espera ${condText}. No olvides hidratarte y disfrutar del día.`;
+            return `El clima en <b>${city}</b> está ${text} con ${Math.round(temp)}°. ${tip} Se espera que las condiciones se mantengan estables.`;
         }
 
         async function fetchWeather(lat, lon) {
             try {
-                const cityPromise = getCityName(lat, lon);
-                const url = `${API_BASE}?latitude=${lat}&longitude=${lon}&${API_PARAMS}`;
-                const response = await fetch(url);
-                const data = await response.json();
+                // Fetch paralelo para velocidad
+                const [weatherRes, cityName] = await Promise.all([
+                    fetch(`${API_BASE}?latitude=${lat}&longitude=${lon}&${API_PARAMS}`),
+                    getCityName(lat, lon)
+                ]);
                 
+                const data = await weatherRes.json();
                 const current = data.current;
                 const daily = data.daily;
 
+                // Update DOM
+                document.getElementById('city-name').innerText = cityName;
                 document.getElementById('current-temp').innerText = Math.round(current.temperature_2m);
                 document.getElementById('condition-text').innerText = getWeatherText(current.weather_code);
                 document.getElementById('max-temp').innerText = Math.round(daily.temperature_2m_max[0]);
                 document.getElementById('min-temp').innerText = Math.round(daily.temperature_2m_min[0]);
-
-                document.getElementById('wind-speed').innerText = Math.round(current.wind_speed_10m);
+                
                 document.getElementById('humidity').innerText = current.relative_humidity_2m;
+                document.getElementById('visibility').innerText = "10+"; // OpenMeteo basic free no da visibility real siempre
                 document.getElementById('uv-index').innerText = Math.round(daily.uv_index_max[0]);
-                document.getElementById('visibility').innerText = "10+";
+                document.getElementById('wind-speed').innerText = Math.round(current.wind_speed_10m);
 
-                // Hourly
+                // Hourly Forecast
                 const list = document.getElementById('hourly-list');
                 list.innerHTML = '';
-                const hour = new Date().getHours();
-                for(let i = hour; i < hour + 24; i++) {
+                const currentHour = new Date().getHours();
+                
+                for(let i = currentHour; i < currentHour + 24; i++) {
                     if(!data.hourly.time[i]) break;
                     const t = Math.round(data.hourly.temperature_2m[i]);
-                    const c = data.hourly.weather_code[i];
-                    // Estilo de lista horaria simplificado
+                    const code = data.hourly.weather_code[i];
+                    const timeStr = data.hourly.time[i].slice(11,16);
+                    
                     list.innerHTML += `
                         <div class="hour-item">
-                            <span class="hour-time">${data.hourly.time[i].slice(11,16)}</span>
-                            <span class="material-symbols-rounded" style="font-size:28px; color:#444">${getWeatherIcon(c)}</span>
+                            <span class="hour-time">${timeStr}</span>
+                            <span class="material-symbols-rounded" style="font-size:24px; color:#FFF;">${getWeatherIcon(code)}</span>
                             <span class="hour-temp">${t}°</span>
-                        </div>`;
+                        </div>
+                    `;
                 }
 
-                const cityName = await cityPromise;
+                // AI Report
                 document.getElementById('ai-summary').innerHTML = generateAIReport(current.temperature_2m, current.weather_code, cityName);
 
             } catch (error) {
-                console.error("Error total:", error);
-                document.getElementById('ai-summary').innerText = "No pudimos conectar con el clima. Toca arriba para reintentar.";
+                console.error(error);
+                document.getElementById('condition-text').innerText = "Error de conexión";
             }
         }
 
         function init() {
-            const timeoutVal = 5000;
-            const fallbackLocation = { coords: { latitude: -34.6037, longitude: -58.3816 } }; 
-            
-            let hasLoaded = false;
-
-            const success = (pos) => {
-                if(hasLoaded) return;
-                hasLoaded = true;
-                fetchWeather(pos.coords.latitude, pos.coords.longitude);
-            };
-
-            const error = () => {
-                if(hasLoaded) return;
-                hasLoaded = true;
-                console.warn("Fallo GPS, usando default");
-                fetchWeather(fallbackLocation.coords.latitude, fallbackLocation.coords.longitude);
-            };
-
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(success, error, { timeout: timeoutVal });
-                setTimeout(error, timeoutVal);
+                navigator.geolocation.getCurrentPosition(
+                    pos => fetchWeather(pos.coords.latitude, pos.coords.longitude),
+                    () => fetchWeather(-34.6037, -58.3816) // Default Buenos Aires
+                );
             } else {
-                error();
+                fetchWeather(-34.6037, -58.3816);
             }
         }
 
         init();
 
+        // Register Service Worker
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').then(reg => {
-                reg.update();
-            });
+            navigator.serviceWorker.register('./sw.js');
         }
     </script>
 </body>
