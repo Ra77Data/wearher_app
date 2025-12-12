@@ -1,11 +1,11 @@
 {
-  "name": "ChromeOS Weather",
+  "name": "Pixel Weather",
   "short_name": "Weather",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#92bbf7",
-  "theme_color": "#92bbf7",
-  "description": "ChromeOS Pixel Style Weather App",
+  "background_color": "#111927",
+  "theme_color": "#111927",
+  "description": "Pixel Style Weather App",
   "icons": [
     {
       "src": "./icon.png",
