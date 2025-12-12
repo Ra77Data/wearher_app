@@ -3,9 +3,9 @@
   "short_name": "Weather",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#AEC6FF",
-  "theme_color": "#AEC6FF",
-  "description": "ChromeOS Weather App",
+  "background_color": "#92bbf7",
+  "theme_color": "#92bbf7",
+  "description": "ChromeOS Pixel Style Weather App",
   "icons": [
     {
       "src": "./icon.png",
